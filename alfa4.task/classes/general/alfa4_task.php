@@ -13,6 +13,8 @@
 
      const MODULE_ID = 'alfa4.task'; 
 
+     const GROUP_ID = 12;
+
      function __construct() {}
 
      public static function setTaskForEmployee() {
@@ -35,9 +37,11 @@
          if(self::getDateDiff($ufield["UF_CHECK_DAY"]) <= Alfa4TaskManager::DEADLINE_START_TASK && 
             self::IsTaskDateExpires($ufield["UF_CHECK_DAY"])) {
 
-           if(self::setTask($ufield["UF_CHECK_DAY"])) {
+           $user_full_name = $ufield['NAME'].' '.$ufield['LAST_NAME'];
 
-             self::logTask("Задача поставлена ".$ufield['NAME'].' '.$ufield['LAST_NAME']);
+           if(self::setTask($ufield["UF_CHECK_DAY"],$user_full_name)) {
+
+             self::logTask("Задача поставлена ".$user_full_name);
 
            } else {
                 
@@ -67,18 +71,18 @@
 
     }
 
-    private static function setTask($date) {
+    private static function setTask($date,$user_name) {
 
       $task_fileds = array(
-        "TITLE"       => self::getOptions('TITLE_0'),
-        "DESCRIPTION" => "Проверить сотрудника",
+        "TITLE"           => self::getOptions('TITLE_0'),
+        "DESCRIPTION"     => "Проверить сотрудника: ".$user_name,
         "RESPONSIBLE_ID"  => self::getOptions('RESPONSIBLE_0'),
         "CREATED_BY"      => self::getOptions('CREATED_BY_0'),
         "START_DATE_PLAN" => $date,
-        "DEADLINE" => $date,
-        "GROUP_ID" => 12,
-        "AUDITORS" =>     self::getOptions('AUDITORS_0'),
-        "ACCOMPLICES" =>  self::getOptions('ACCOMPLICES_0')
+        "DEADLINE"        => $date,
+        "GROUP_ID"        => Alfa4TaskManager::GROUP_ID,
+        "AUDITORS"        => self::getOptions('AUDITORS_0'),
+        "ACCOMPLICES"     => self::getOptions('ACCOMPLICES_0')
      );
 
      $obTask = new CTasks;
@@ -109,7 +113,7 @@
 
     }
 
-    public static function getOptions($key) {
+    private static function getOptions($key) {
 
       $params = array("TITLE_0","CREATED_BY_0","RESPONSIBLE_0","ACCOMPLICES_0","AUDITORS_0");  
 
